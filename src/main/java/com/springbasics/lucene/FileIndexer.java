@@ -28,13 +28,15 @@ import org.springframework.beans.factory.annotation.Value;
 
 import com.nimbusds.jose.util.StandardCharset;
 
-public class FileIndexer extends IAbstractLucene {
+public class FileIndexer extends IAbstractLucene implements ILucene {
 
 	private File fileToBeIndexed;
 
 	@Value("${lucene.db}")
 	private String luceneDataDirectory;
 
+
+		
 
 	private boolean create = false;
 
@@ -44,15 +46,18 @@ public class FileIndexer extends IAbstractLucene {
 		return filesIndexed;
 	}
 
-	public FileIndexer(boolean create, File files) {
+	public FileIndexer(boolean create, String dataDir, File files) {
 		this.fileToBeIndexed = files;
 		this.create = create;
+		if (luceneDataDirectory == null || luceneDataDirectory.isBlank() || luceneDataDirectory.isEmpty()) {
+			luceneDataDirectory = dataDir;
+		}
 	}
 
 	@Override
 	public void indexFiles() {
 		try {
-			this.index();
+			index();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -87,6 +92,12 @@ public class FileIndexer extends IAbstractLucene {
 						e.printStackTrace();
 					}
 				});
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}else {
+			try {
+				indexedFiles.addAll(indexDocument(writer, documentsDirectory.toPath(), Files.getLastModifiedTime(documentsDirectory.toPath(), LinkOption.NOFOLLOW_LINKS).toMillis()));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

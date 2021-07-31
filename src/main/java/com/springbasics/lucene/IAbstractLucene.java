@@ -2,6 +2,8 @@ package com.springbasics.lucene;
 
 public abstract class IAbstractLucene {
 	
-	abstract void indexFiles();
+	
+	
+	public abstract void indexFiles();
 
 }
