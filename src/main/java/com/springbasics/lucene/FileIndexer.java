@@ -28,15 +28,16 @@ import org.springframework.beans.factory.annotation.Value;
 
 import com.nimbusds.jose.util.StandardCharset;
 
+/**
+ * @author hshaik
+ *
+ */
 public class FileIndexer extends IAbstractLucene implements ILucene {
 
 	private File fileToBeIndexed;
 
 	@Value("${lucene.db}")
 	private String luceneDataDirectory;
-
-
-		
 
 	private boolean create = false;
 
@@ -46,6 +47,11 @@ public class FileIndexer extends IAbstractLucene implements ILucene {
 		return filesIndexed;
 	}
 
+	/**
+	 * @param create
+	 * @param dataDir
+	 * @param files
+	 */
 	public FileIndexer(boolean create, String dataDir, File files) {
 		this.fileToBeIndexed = files;
 		this.create = create;
@@ -54,6 +60,9 @@ public class FileIndexer extends IAbstractLucene implements ILucene {
 		}
 	}
 
+	/**
+	 * Key method to indexFiles() into lucene db
+	 */
 	@Override
 	public void indexFiles() {
 		try {
@@ -78,6 +87,11 @@ public class FileIndexer extends IAbstractLucene implements ILucene {
 		}
 	}
 
+	/**
+	 * @param writer
+	 * @param documentsDirectory
+	 * @return
+	 */
 	private List<Path> indexDocuments(IndexWriter writer, File documentsDirectory) {
 		List<Path> indexedFiles = new ArrayList<>();
 		if (Files.isDirectory(documentsDirectory.toPath())) {
@@ -106,6 +120,12 @@ public class FileIndexer extends IAbstractLucene implements ILucene {
 
 	}
 
+	/**
+	 * @param writer
+	 * @param file
+	 * @param lastModifiedTime
+	 * @return
+	 */
 	private List<Path> indexDocument(IndexWriter writer, Path file, long lastModifiedTime) {
 		List<Path> documentsIndexed = new ArrayList<>();
 		try (var stream = Files.newInputStream(file)) {
@@ -133,6 +153,10 @@ public class FileIndexer extends IAbstractLucene implements ILucene {
 
 	}
 
+	/**
+	 * This will set the configuration
+	 * @return
+	 */
 	private IndexWriterConfig getIndexWriterConfig() {
 		Analyzer analyzer = new StandardAnalyzer();
 		var config = new IndexWriterConfig(analyzer);
